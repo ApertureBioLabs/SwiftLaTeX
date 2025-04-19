@@ -13,6 +13,8 @@ TEXSOURCES   	= 	tex/pdftex0.c \
 					tex/pdftexini.c \
 					tex/pdftex-pool.c \
 					main.c \
+					zlib/zlib_impl.c\
+					zlib/miniz.c\
 					md5.c \
 					xmemory.c \
 					texfile.c \
@@ -56,7 +58,7 @@ all: $(PROJECT_NAME)
 
 $(PROJECT_NAME): $(HEADERS) $(TEXOBJECTS) $(PDFOBJECTS) $(EPDFOBJECTS)
 	@$(CXX_LINK) $(TEXOBJECTS) $(PDFOBJECTS) $(EPDFOBJECTS) xpdf/xpdf.a  --js-library library.js  --pre-js pre.js \
-	-s EXPORTED_FUNCTIONS='["_compileBibtex", "_compileLaTeX", "_compileFormat", "_main", "_setMainEntry"]' \
+	-s EXPORTED_FUNCTIONS='["_compileBibtex", "_compileLaTeX", "_unpack_zip", "_zlib_unpack", "_compileFormat", "_main", "_setMainEntry"]' \
 	-s EXPORTED_RUNTIME_METHODS=["cwrap"] -s NO_EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 && \
 	echo -e "\033[32m[DONE]\033[0m $(PROJECT_NAME)" || \
 	echo -e "\033[31m[ERROR]\033[0m $(PROJECT_NAME)"

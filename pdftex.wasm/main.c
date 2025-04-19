@@ -1,7 +1,5 @@
 #define EXTERN /* Instantiate data from pdftexd.h here.  */
-
 #include <pdftexd.h>
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -13,6 +11,8 @@
 #include <md5.h>
 #include <setjmp.h>
 #include "bibtex.h"
+#include "zlib/zlib_impl.h"
+
 string fullnameoffile;
 string output_directory;
 
@@ -483,54 +483,54 @@ find_input_file(integer s)
     return kpse_find_tex(filename);
 }
 
+//Uncomment if you need to test locally
+// #ifndef WEBASSEMBLY_BUILD
+// int main(int argc, char **argv) {
 
-#ifndef WEBASSEMBLY_BUILD
-int main(int argc, char **argv) {
-
-  haltonerrorp = 1;
-  ac = argc;
-  av = argv;
-  // Parse Argument
-  int c;
-  while ((c = getopt(ac, av, "io:")) != -1)
-    switch (c) {
-    case 'i':
-      iniversion = 1;
-      strncpy(bootstrapcmd, "*pdflatex.ini", MAXMAINFILENAME);
-      break;
-    case 'o':
-      output_directory = optarg;
-      break;
-  }
+//   haltonerrorp = 1;
+//   ac = argc;
+//   av = argv;
+//   // Parse Argument
+//   int c;
+//   while ((c = getopt(ac, av, "io:")) != -1)
+//     switch (c) {
+//     case 'i':
+//       iniversion = 1;
+//       strncpy(bootstrapcmd, "*pdflatex.ini", MAXMAINFILENAME);
+//       break;
+//     case 'o':
+//       output_directory = optarg;
+//       break;
+//   }
   
-  if (iniversion != 1) {
-    for (int index = optind; index < argc; index++) {
-      strncpy(bootstrapcmd, argv[index], MAXMAINFILENAME);
-      bootstrapcmd[MAXMAINFILENAME - 1] = 0;
-      break;
-    }
-  }
+//   if (iniversion != 1) {
+//     for (int index = optind; index < argc; index++) {
+//       strncpy(bootstrapcmd, argv[index], MAXMAINFILENAME);
+//       bootstrapcmd[MAXMAINFILENAME - 1] = 0;
+//       break;
+//     }
+//   }
 
-  if (strlen(bootstrapcmd) == 0) {
-    fprintf(stderr, "Usage: swiftlatex foo.tex\n");
-    return -1;
-  }
+//   if (strlen(bootstrapcmd) == 0) {
+//     fprintf(stderr, "Usage: swiftlatex foo.tex\n");
+//     return -1;
+//   }
 
-  dumpname = DEFAULT_DUMP_NAME;
-  int fmtstrlen = strlen(DEFAULT_FMT_NAME);
-  TEXformatdefault = xmalloc(fmtstrlen + 2);
-  memcpy(TEXformatdefault, DEFAULT_FMT_NAME, fmtstrlen);
-  formatdefaultlength = strlen(TEXformatdefault + 1);
-  interactionoption = 1;
-  filelineerrorstylep = 0;
-  parsefirstlinep = 0;
-  // Go
-  if (setjmp(jmpenv) == 0)
-    mainbody();
+//   dumpname = DEFAULT_DUMP_NAME;
+//   int fmtstrlen = strlen(DEFAULT_FMT_NAME);
+//   TEXformatdefault = xmalloc(fmtstrlen + 2);
+//   memcpy(TEXformatdefault, DEFAULT_FMT_NAME, fmtstrlen);
+//   formatdefaultlength = strlen(TEXformatdefault + 1);
+//   interactionoption = 1;
+//   filelineerrorstylep = 0;
+//   parsefirstlinep = 0;
+//   // Go
+//   if (setjmp(jmpenv) == 0)
+//     mainbody();
 
-  return EXIT_SUCCESS;
-}
-#else
+//   return EXIT_SUCCESS;
+// }
+// #else
 
 char main_entry_file[MAXMAINFILENAME];
 
@@ -550,6 +550,11 @@ int _compile() {
 
   // printf("Compile stop with %d\n", exit_code);
   return exit_code;
+}
+
+int unpack_zip(){
+  int zlib_ret = zlib_unpack("/tex/tex.zip","/tex/");
+  return zlib_ret;
 }
 
 int compileLaTeX() {
@@ -592,4 +597,4 @@ int main(int argc, char **argv) {
     printf("SwiftLaTeX Engine Loaded\n");
 }
 
-#endif
+// #endif

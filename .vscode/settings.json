@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "miniz.h": "c",
+    "pdftexd.h": "c",
+    "zlib_impl.h": "c"
+  }
+}
